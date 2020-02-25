@@ -1,0 +1,8 @@
+{
+    "CreateAPIKey": 1,
+    "AppSyncApiName": "radataappsync",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false",
+    "S3DeploymentBucket": "amplify-ra-data-appsync-develop-142606-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/41803154ba488d55f6df026b17d58a8de6fad89e"
+}

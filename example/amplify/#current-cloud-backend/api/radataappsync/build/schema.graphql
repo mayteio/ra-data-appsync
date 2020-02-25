@@ -1,0 +1,248 @@
+type Blog {
+  id: ID!
+  name: String!
+  posts(filter: ModelPostFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPostConnection
+}
+
+type Post {
+  id: ID!
+  title: String!
+  blog: Blog
+  comments(filter: ModelCommentFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelCommentConnection
+}
+
+type Comment {
+  id: ID!
+  content: String
+  post: Post
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelBlogConnection {
+  items: [Blog]
+  nextToken: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelBlogFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  and: [ModelBlogFilterInput]
+  or: [ModelBlogFilterInput]
+  not: ModelBlogFilterInput
+}
+
+type Query {
+  getBlog(id: ID!): Blog
+  listBlogs(filter: ModelBlogFilterInput, limit: Int, nextToken: String): ModelBlogConnection
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  getComment(id: ID!): Comment
+  listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
+}
+
+input CreateBlogInput {
+  id: ID
+  name: String!
+}
+
+input UpdateBlogInput {
+  id: ID!
+  name: String
+}
+
+input DeleteBlogInput {
+  id: ID
+}
+
+type Mutation {
+  createBlog(input: CreateBlogInput!, condition: ModelBlogConditionInput): Blog
+  updateBlog(input: UpdateBlogInput!, condition: ModelBlogConditionInput): Blog
+  deleteBlog(input: DeleteBlogInput!, condition: ModelBlogConditionInput): Blog
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+  createComment(input: CreateCommentInput!, condition: ModelCommentConditionInput): Comment
+  updateComment(input: UpdateCommentInput!, condition: ModelCommentConditionInput): Comment
+  deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
+}
+
+input ModelBlogConditionInput {
+  name: ModelStringInput
+  and: [ModelBlogConditionInput]
+  or: [ModelBlogConditionInput]
+  not: ModelBlogConditionInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+type Subscription {
+  onCreateBlog: Blog @aws_subscribe(mutations: ["createBlog"])
+  onUpdateBlog: Blog @aws_subscribe(mutations: ["updateBlog"])
+  onDeleteBlog: Blog @aws_subscribe(mutations: ["deleteBlog"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
+  onCreateComment: Comment @aws_subscribe(mutations: ["createComment"])
+  onUpdateComment: Comment @aws_subscribe(mutations: ["updateComment"])
+  onDeleteComment: Comment @aws_subscribe(mutations: ["deleteComment"])
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  postBlogId: ID
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  postBlogId: ID
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+input ModelPostConditionInput {
+  title: ModelStringInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+type ModelCommentConnection {
+  items: [Comment]
+  nextToken: String
+}
+
+input ModelCommentFilterInput {
+  id: ModelIDInput
+  content: ModelStringInput
+  and: [ModelCommentFilterInput]
+  or: [ModelCommentFilterInput]
+  not: ModelCommentFilterInput
+}
+
+input CreateCommentInput {
+  id: ID
+  content: String
+  commentPostId: ID
+}
+
+input UpdateCommentInput {
+  id: ID!
+  content: String
+  commentPostId: ID
+}
+
+input DeleteCommentInput {
+  id: ID
+}
+
+input ModelCommentConditionInput {
+  content: ModelStringInput
+  and: [ModelCommentConditionInput]
+  or: [ModelCommentConditionInput]
+  not: ModelCommentConditionInput
+}
