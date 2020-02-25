@@ -13,9 +13,12 @@ What they don't do, is provide an easy admin interface to manage this data. Ente
 ## Installation
 
 ```bash
-$ yarn create react-app amplify-backend-app
-$ cd amplify-backend-app
-$ yarn add react-admin ra-data-amplify aws-amplify
+# pending npm release
+# $ yarn create react-app amplify-backend-app
+# $ cd amplify-backend-app
+# $ yarn add react-admin ra-data-appsync aws-amplify
+
+git clone https://github.com/mayteio/ra-data-appsync.git src/ra-data-appsync
 $ amplify add api # run through the setup
 $ amplify push # will generate aws-exports.js
 $ yarn start
