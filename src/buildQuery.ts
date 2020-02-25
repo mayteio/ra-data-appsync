@@ -4,11 +4,13 @@ import { buildQueryFactoryOpts } from './types';
 export const buildQueryFactory = ({
   queries,
 }: // mutations,
-buildQueryFactoryOpts) => () => (
+buildQueryFactoryOpts) => (introspection: any) => (
   raFetchType: string,
   modelType: string,
   params: Record<string, any>
 ) => {
+  console.log(introspection);
+
   switch (raFetchType) {
     case 'GET_LIST':
       return {

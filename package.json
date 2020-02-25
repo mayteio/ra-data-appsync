@@ -32,6 +32,7 @@
   "module": "dist/ra-data-appsync.esm.js",
   "devDependencies": {
     "@types/jest": "^25.1.3",
+    "@types/pluralize": "^0.0.29",
     "@types/react": "^16.9.22",
     "@types/react-dom": "^16.9.5",
     "husky": "^4.2.3",
