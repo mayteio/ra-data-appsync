@@ -1,77 +1,64 @@
-import gql from 'graphql-tag';
-import {
-  GET_LIST,
-  GET_ONE,
-  // GET_MANY, CREATE, UPDATE, DELETE
-} from 'ra-core';
-import { buildQueryFactoryOpts } from './types';
+import buildVariables from './buildVariables';
+import { getGqlQuery } from './buildGqlQuery';
+import getResponseParser from './getResponseParser';
 
-export const buildQueryFactory = ({
-  queries,
-}: // mutations,
-buildQueryFactoryOpts) => () => (
-  raFetchType: string,
-  modelType: string,
-  params: Record<string, any>
-) => {
-  switch (raFetchType) {
-    case GET_LIST:
-      return {
-        query: gql(queries[`list${modelType}s`]),
-        variables: {
-          // filter: params.filter,
-          // limit: params.pagination?.perPage,
-          // we somehow need to override params.pagination.page to return the nextToken instead.
-          // nextToken: params.pagination.page
-        },
-        parseResponse: (response: any) => ({
-          data: response.data[`list${modelType}s`].items,
-          total: null,
-        }),
-      };
-    case GET_ONE:
-      return {
-        query: gql(queries[`get${modelType}`]),
-        variables: params,
-        parseResponse: (response: any) => ({
-          data: response.data[`get${modelType}`],
-        }),
-      };
-    // case CREATE:
-    //   return {
-    //     query: gql(mutations[`create${modelType}`]),
-    //     variables: { input: params },
-    //     parseResponse: (response: any) => ({
-    //       data: response.data[`create${modelType}`],
-    //     }),
-    //   };
-    // case UPDATE:
-    //   return {
-    //     query: gql(mutations[`update${modelType}`]),
-    //     variables: { input: { id: params.id, ...params.data } },
-    //     parseResponse: (response: any) => ({
-    //       data: response.data[`update${modelType}`],
-    //     }),
-    //   };
-    // case DELETE:
-    //   return {
-    //     query: gql(mutations[`delete${modelType}`]),
-    //     variables: { input: params },
-    //     parseResponse: (response: any) => ({
-    //       data: response.data[`delete${modelType}`],
-    //     }),
-    //   };
-    // case GET_MANY:
-    //   return {
-    //     query: gql(queries[`list${modelType}`]),
-    //     variables: {
-    //       limit: params.ids.length,
-    //       filter: {
-    //         or: params.ids.map((id: string | number) => ({ id: { eq: id } })),
-    //       },
-    //     },
-    //   };
-    default:
-      return {};
-  }
+export const buildQueryFactory = (
+  buildVariablesImpl: any,
+  getGqlQuery: any,
+  getResponseParserImpl: any
+) => ({ queries, mutations }: any) => (introspectionResults: any) => {
+  const knownResources = introspectionResults.resources.map(
+    (r: any) => r.type.name
+  );
+
+  return (aorFetchType: string, resourceName: string, params: any) => {
+    console.log(aorFetchType, resourceName, params);
+    const resource = introspectionResults.resources.find(
+      (r: any) => r.type.name === resourceName
+    );
+
+    if (!resource) {
+      throw new Error(
+        `Unknown resource ${resourceName}. Make sure it has been declared on your server side schema. Known resources are ${knownResources.join(
+          ', '
+        )}`
+      );
+    }
+
+    const queryType = resource[aorFetchType];
+
+    if (!queryType) {
+      throw new Error(
+        `No query or mutation matching fetch type ${aorFetchType} could be found for resource ${resource.type.name}`
+      );
+    }
+
+    const variables = buildVariablesImpl(introspectionResults)(
+      resource,
+      aorFetchType,
+      params,
+      queryType
+    );
+    const query = getGqlQuery()(aorFetchType, resource, queries, mutations);
+
+    const parseResponse = getResponseParserImpl(introspectionResults)(
+      aorFetchType,
+      resource,
+      queryType
+    );
+
+    console.log(variables);
+
+    return {
+      query,
+      variables,
+      parseResponse,
+    };
+  };
 };
+
+export default buildQueryFactory(
+  buildVariables,
+  getGqlQuery,
+  getResponseParser
+);
